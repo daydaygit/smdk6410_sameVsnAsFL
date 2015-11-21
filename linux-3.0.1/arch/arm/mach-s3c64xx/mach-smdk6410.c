@@ -72,6 +72,10 @@
 #include <plat/ts.h>
 #include <plat/keypad.h>
 
+#include <linux/mtd/mtd.h>
+#include <linux/mtd/partitions.h>
+#include <plat/nand.h>
+
 #define UCON S3C2410_UCON_DEFAULT | S3C2410_UCON_UCLK
 #define ULCON S3C2410_LCON_CS8 | S3C2410_LCON_PNONE | S3C2410_LCON_STOPB
 #define UFCON S3C2410_UFCON_RXTRIG8 | S3C2410_UFCON_FIFOMODE
@@ -106,6 +110,75 @@ static struct s3c2410_uartcfg smdk6410_uartcfgs[] __initdata = {
 		.ufcon	     = UFCON,
 	},
 };
+
+/*
+ * Configuring Nandflash on SMDK6410
+ */
+struct mtd_partition ok6410_nand_part[] = {
+#if 0
+							/* start   end   size */
+	[0] = {
+		.name           = "Bootloader",         /*  0      1M     1M*/
+		.offset         = 0,
+		.size           = (SZ_1M * 2),
+		.mask_flags     = MTD_CAP_NANDFLASH,
+	},
+	[1] = {
+		.name           = "Kernel",             /*  1M     6M     5M*/
+		.offset         = (SZ_1M * 2),
+		.size           = (SZ_1M * 5),
+		.mask_flags = MTD_CAP_NANDFLASH,
+
+	},
+	[2] = {
+		.name           = "File System",        /*  6M    206M   200M */
+		.offset         = (SZ_1M * 7),
+		.size           = MTDPART_SIZ_FULL,
+	},
+#else
+	{
+		.name           = "Bootloader",
+		.offset         = 0,
+		.size           = (2 * SZ_1M),
+		.mask_flags     = MTD_CAP_NANDFLASH,
+	},
+	{
+		.name           = "Kernel",
+		.offset         = (2 * SZ_1M),
+		.size           = (5*SZ_1M) ,
+		.mask_flags     = MTD_CAP_NANDFLASH,
+	},
+	{
+		.name           = "User",
+		.offset         = (7 * SZ_1M),
+		.size           = (200*SZ_1M) ,
+	},
+	{
+		.name           = "File System",
+		.offset         = MTDPART_OFS_APPEND,
+		.size           = MTDPART_SIZ_FULL,
+	}
+#endif
+};
+
+
+static struct s3c2410_nand_set ok6410_nand_sets[] = {
+        [0] = {
+                .name       = "nand",
+                .nr_chips   = 1,
+                .nr_partitions  = ARRAY_SIZE(ok6410_nand_part),
+                .partitions = ok6410_nand_part,
+        },
+};
+
+static struct s3c2410_platform_nand ok6410_nand_info = {
+        .tacls      = 25,
+        .twrph0     = 55,
+        .twrph1     = 40,
+        .nr_sets    = ARRAY_SIZE(ok6410_nand_sets),
+        .sets       = ok6410_nand_sets,
+};
+
 
 /* framebuffer and LCD setup. */
 
@@ -330,6 +403,8 @@ static struct platform_device *smdk6410_devices[] __initdata = {
 	&smdk6410_b_pwr_5v,
 #endif
 	&smdk6410_lcd_powerdev,
+
+	&s3c_device_nand,
 
 	&smdk6410_smsc911x,
 	&s3c_device_adc,
@@ -707,6 +782,8 @@ static void __init smdk6410_machine_init(void)
 	s3c_i2c0_set_platdata(NULL);
 	s3c_i2c1_set_platdata(NULL);
 	s3c_fb_set_platdata(&smdk6410_lcd_pdata);
+
+	s3c_nand_set_platdata(&ok6410_nand_info);
 
 	samsung_keypad_set_platdata(&smdk6410_keypad_data);
 
