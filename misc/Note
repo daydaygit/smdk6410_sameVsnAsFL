@@ -16,7 +16,7 @@ Instruction:
 		CROSS_COMPILE
 
 	  fs
-		To see yaffs2 relate infomation
+		To see yaffs2 related infomation
 
 	  mtd partion & nand 's  device & driver
 
@@ -39,10 +39,10 @@ Instruction:
 	  Makefile
 
 	3.make
-	 make distclean
-	 make s3c6410_defconfig
-	(make menuconfig)
-	 make zImage
+	  make distclean
+	  make s3c6410_defconfig
+	 (make menuconfig)
+	  make zImage
 
 
  yaffs2
