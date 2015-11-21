@@ -1,0 +1,66 @@
+Instruction:
+
+ linux:
+	1.get source
+	  https://www.kernel.org/
+		How to download 3.0.1(as fl) ???????
+		----- ftp://ftp.kernel.org/pub/linux/kernel/
+		----- ftp://ftp.kernel.org/pub/linux/kernel/v3.0/linux-3.0.1.tar.bz2
+	  *.tar.xz
+		xz -d  *.tar.xz
+		tar -xvf  *.tar
+
+	2.modify code
+	  Makefile
+		ARCH
+		CROSS_COMPILE
+
+	  fs
+		To see yaffs2 relate infomation
+
+	  mtd partion & nand 's  device & driver
+
+	  .config
+		can be generated base on make s3c6410_defconfig
+		Option:
+			System Type & CPU & SOC
+			CommandLine
+			Device Drivers  --- devtmpfs
+					--- MTD support  --- MTD partitioning support
+							 --- MTD_CHAR
+							 --- MTD_BLOCK
+							 --- MTD_BLKDEVS
+							 --- Nand support  ... MTD_NAND_S3C
+									   ... MTD_NAND_S3C_DEBUG
+									   ... MTD_NAND_S3C_HWECC
+			File systems  --- yaffs2 fs support
+
+	  Kconfig
+	  Makefile
+
+	3.make
+	 make distclean
+	 make s3c6410_defconfig
+	(make menuconfig)
+	 make zImage
+
+
+ yaffs2
+	1.get source
+	  http://aleph1.co.uk/gitweb/?p=yaffs2.git;a=shortlog;h=HEAD
+	  http://www.yaffs.net/downloads
+	  --> click: from our GIT repository
+	   --> http://www.yaffs.net/download-yaffs-using-git
+	    --> click: access the repository over the web
+	     --> http://www.aleph1.co.uk/gitweb/?p=yaffs2.git;a=summary
+	      --> click: shortlog
+	       --> http://www.aleph1.co.uk/gitweb/?p=yaffs2.git;a=shortlog
+
+	2.execute script
+	  yaffs2$ ./patch-ker.sh c m /media/EXT4_300/CODE/smdk6410_toFixfsMount/smdk6410_sameVsnAsFL/linux-3.0.1
+		m:  fs/Kconfig
+		m:  fs/Makefile
+		+:  fs/Kconfig.pre.yaffs
+		+:  fs/Makefile.pre.yaffs
+		+:  fs/yaffs2/
+
